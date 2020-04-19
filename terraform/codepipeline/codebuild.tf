@@ -89,7 +89,7 @@ resource "aws_codebuild_project" "codebuild" {
       value = data.aws_caller_identity.current.account_id
     }
 
-    privileged_mode = true 
+    privileged_mode = true # Required to be able to do docker builds
   }
 
   logs_config {

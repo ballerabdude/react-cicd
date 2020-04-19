@@ -1,4 +1,0 @@
-Developmnet_ECS_Service_Name = react-cicd-development
-Developmnet_LB_DNS = react-cicd-development-1277964303.us-east-1.elb.amazonaws.com
-QA_ECS_Service_Name = react-cicd-qa
-QA_LB_DNS = react-cicd-qa-443232709.us-east-1.elb.amazonaws.com
