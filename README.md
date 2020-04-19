@@ -36,7 +36,7 @@ aws secretsmanager create-secret --region us-east-1 --name github/personal \
  [AWS](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
  
  1. Update the values in [./terraform/codepipeline/terraform.tfvars](./terraform/codepipeline/terraform.tfvars) terrafrom file to reflect your repo
- 2. Change the application name so that you do not get any s3 errors.
+ 2. <b>Change the application name so that you do not get any s3 errors.</b>
     * [./terraform/codepipeline/terraform.tfvars](./terraform/codepipeline/terraform.tfvars)
     * [./terraform/ecs-cluster/terraform.tfvars](./terraform/ecs-cluster/terraform.tfvars)
  3. Run the above aws cli cmd to add the github personal token
