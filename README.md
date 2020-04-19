@@ -1,7 +1,7 @@
 # React-CICD
 
 ## Description
-A simple react application that pulls down a json data from a url a displays the contents.
+A simple react application that pulls down a json data from a url and displays the contents.
 
 The project runs on fargate with two environments for both the master and develop branch. The urls for these envs can be found by  running `terraform output` in the ecs directory under terraform.
 
@@ -12,7 +12,7 @@ Any changes to the develop or master branch will kick of a job in AWS CodePipeli
 All infrastructure related files will live in the terrform directory with the exception of the buildspce.yml and Docekrfile.
 
 #### ./terraform/ecs-cluster
-The following directory contains related files to spin up loadbalancers and the ECS services. Currently all environments are part of the same terrafrom directory. This design will not be acceptable for production.
+The following directory contains related files to spin up loadbalancers and the ECS services. Currently all environments are part of the same terrafrom directory. I would not recommended this for production.
 
 The service's name created in this terraform is referenced in the codepipeline terraform. Its currently using a naming convention so remote data was not used but is a good canidate for remote data.
 
@@ -25,7 +25,7 @@ Github personal token was used for authentication. The token is stored in aws se
 ```
 aws secretsmanager create-secret --region us-east-1 --name github/personal \
     --description "GitHub Personal Token" \
-    --secret-string ''
+    --secret-string '<YOUR TOKEN HERE>'
  ```   
 
  # Steps to install
@@ -48,9 +48,44 @@ aws secretsmanager create-secret --region us-east-1 --name github/personal \
     * If you did not change the application name you will get an error here
     * If you do not have branch in origin called master or develop its respective pipeline will fail
 
+# Terraform
+
+## ecs-cluster
+
+##### Variables
+
+| Name | Description |
+|------|-------------|
+| vpc_id | vpc to deploy ecs cluster into|
+| public_vpc_subnet_ids | Public subnets to attach LB and container to |
+| ecs_cluster_name | Name to call cluster |
+| tags_as_map | key value pair of aaws tags to apply to resources. Application name is set here|
+
+##### Outputs
+
+| Name | Description |
+|------|-------------|
+| Developmnet_ECS_Service_Name | name of ecs service for development|
+| Developmnet_LB_DNS | url to access development loadbalancer |
+| QA_ECS_Service_Name | name of ecs service for qa |
+| QA_LB_DNS | url to access qa loadbalancer |
+
+## codepipeline
+
+##### Variables
+
+| Name | Description |
+|------|-------------|
+| github_organization | github user name or team name |
+| github_repo_name | name of repo |
+| github_secrets_arn | arn or secret |
+| ecs_cluster_name | name of cluster to deploy to |
+| tags_as_map | key value pair of aaws tags to apply to resources. Application name is set here|
+
 # CI/CD
 
-Merges into develop or master will trigger a build and deployment.  
+Merges into develop or master will trigger a build and deployment.
+Build and deploy times is around 5min from when you push to origin.
 
 # About the Dockerfile
 
@@ -65,6 +100,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 #  Monitoring 
 
 Since we are only running a webserver monitoring the cpu would be the best place to see if our infrastructure is adequately set up.
+
+# Security
+
+The terraform state files will print the github token in clear text. A better place to keep your terraform state file is in s3 with encryption and hardened policy for who can view objects.
 
 ## Available Scripts
 
