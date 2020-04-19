@@ -19,7 +19,7 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${BUILD_IMAGE}
-      - DOCKER_IMAGE= ${AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$BUILD_IMAGE}
+      - DOCKER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BUILD_IMAGE}
       - echo Writing image definitions file...
       - sed -i.bak  -e "s;%IMAGE%;${DOCKER_IMAGE};g" fargate-task.json
 artifacts:
