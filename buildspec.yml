@@ -21,6 +21,6 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${BUILD_IMAGE}
       - DOCKER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BUILD_IMAGE}
       - echo Writing image definitions file...
-      - printf '[{"name":"container","imageUri":"%s"}]' $DOCKER_IMAGE > imagedefinitions.json
+      - printf '[{"name":"web","imageUri":"%s"}]' $DOCKER_IMAGE > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
