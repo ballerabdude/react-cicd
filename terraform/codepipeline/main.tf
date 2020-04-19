@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "codepipeline_bucket" {
   bucket = "${lookup(var.tags_as_map, "application")}-codepipeline"
   acl    = "private"
-
+  force_destroy = true
   tags = var.tags_as_map
 }
 
@@ -74,7 +74,5 @@ data "aws_secretsmanager_secret_version" "github_secrets" {
 
 # A shared secret between GitHub and AWS
 locals {
-  webhook_secret = jsondecode(data.aws_secretsmanager_secret_version.github_secrets.secret_string)["github-webhook"] # CodePipeline to authenticate the request comming from GitHub.
-  github_personal_token = jsondecode(data.aws_secretsmanager_secret_version.github_secrets.secret_string)["github-personal-token"]
-  
+  github_personal_token = data.aws_secretsmanager_secret_version.github_secrets.secret_string
 }

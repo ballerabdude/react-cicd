@@ -14,6 +14,7 @@ RUN npm run test
 
 RUN npm run build
 
+# Using nginx to run application since npm build produce static files
 FROM nginx
 
 COPY --from=Build /app/build /usr/share/nginx/html

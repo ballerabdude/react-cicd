@@ -1,4 +1,70 @@
+# React-CICD
+
+## Description
+A simple react application that pulls down a json data from a url a displays the contents.
+
+The project runs on fargate with two environments for both the master and develop branch. The urls for these envs can be found by  running `terraform output` in the ecs directory under terraform.
+
+Any changes to the develop or master branch will kick of a job in AWS CodePipeline to do the CI/CD process.
+
+## Infrastructure
+
+All infrastructure related files will live in the terrform directory with the exception of the buildspce.yml and Docekrfile.
+
+#### ./terraform/ecs-cluster
+The following directory contains related files to spin up loadbalancers and the ECS services. Currently all environments are part of the same terrafrom directory. This design will not be acceptable for production.
+
+The service's name created in this terraform is referenced in the codepipeline terraform. Its currently using a naming convention so remote data was not used but is a good canidate for remote data.
+
+#### ./terraform/codepipeline
+The following directory contains related files for the CI/CD process. With AWS CodePipeline there is a pipeline for each branch. I am not a big fan of the the plumbing and files required to get this to work as compaired to a jenkinsfile. 
+
+I initally started to use webhooks from Github to codepipline but this became unmanageable to have multiple webhhoks per pipeline. Instead I have codepipeline polling for changes.
+
+Github personal token was used for authentication. The token is stored in aws secrets manager. Run the following to add token to secrets manager.
+```
+aws secretsmanager create-secret --region us-east-1 --name github/personal \
+    --description "GitHub Personal Token" \
+    --secret-string ''
+ ```   
+
+ # Steps to install
+ 
+ #### Following CLIs required
+ [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
+
+ [AWS](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+ 
+ 1. Update the values in [./terraform/codepipeline/terraform.tfvars](./terraform/codepipeline/terraform.tfvars) terrafrom file to reflect your repo
+ 2. Change the application name so that you do not get any s3 errors.
+    * [./terraform/codepipeline/terraform.tfvars](./terraform/codepipeline/terraform.tfvars)
+    * [./terraform/ecs-cluster/terraform.tfvars](./terraform/ecs-cluster/terraform.tfvars)
+ 3. Run the above aws cli cmd to add the github personal token
+    * Apply the new secret arn here [./terraform/codepipeline/terraform.tfvars](./terraform/codepipeline/terraform)
+ 4. Apply the ecs-cluster terraform to set up the infrastructure
+    * After it has been applied run `terraform output` to get the urls to the load balancers
+    * At this point the application will not run  since we have not built any code yet.
+ 5. Apply the codepipeline terraform to set up the infrastructure
+    * If you did not change the application name you will get an error here
+    * If you do not have branch in origin called master or develop its respective pipeline will fail
+
+# CI/CD
+
+Merges into develop or master will trigger a build and deployment.  
+
+# About the Dockerfile
+
+After the application is built its only a matter of hosting the static files which is the reason why we are using the nginx image to run the application
+
+# Testing
+
+Jest with Enzyme was used to do testing. Currently testing happens during the docker build step. If it needs to  be seperated, a seperate dockerfile can be used to just do npm test.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+#  Monitoring 
+
+Since we are only running a webserver monitoring the cpu would be the best place to see if our infrastructure is adequately set up.
 
 ## Available Scripts
 
